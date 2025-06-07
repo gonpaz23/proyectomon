@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+
+class AppRoutes {
+  static const String home = '/';
+  static const String pokemonDetails = '/pokemon-details';
+  static const String favorites = '/favorites';
+  static const String profile = '/profile';
+
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case home:
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case pokemonDetails:
+        final pokemon = settings.arguments as Pokemon;
+        return MaterialPageRoute(
+          builder: (_) => PokemonDetailsScreen(pokemon: pokemon),
+        );
+      case favorites:
+        return MaterialPageRoute(builder: (_) => const FavoritesScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      default:
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text('No route defined for ${settings.name}'),
+            ),
+          ),
+        );
+    }
+  }
+}
