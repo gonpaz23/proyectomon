@@ -1,0 +1,55 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FavoritesRepository {
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
+
+  FavoritesRepository({
+    required FirebaseFirestore firestore,
+    required FirebaseAuth auth,
+  })  : _firestore = firestore,
+        _auth = auth;
+
+  CollectionReference get _userFavoritesCollection {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) throw Exception('User not authenticated');
+    return _firestore.collection('users').doc(userId).collection('favorites');
+  }
+
+  Future<void> addFavorite(Pokemon pokemon) async {
+    await _userFavoritesCollection.doc(pokemon.id.toString()).set({
+      'id': pokemon.id,
+      'name': pokemon.name,
+      'imageUrl': pokemon.imageUrl,
+      'types': pokemon.types,
+      'addedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> removeFavorite(int pokemonId) async {
+    await _userFavoritesCollection.doc(pokemonId.toString()).delete();
+  }
+
+  Stream<List<Pokemon>> getFavorites() {
+    return _userFavoritesCollection
+        .orderBy('addedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Pokemon(
+                  id: doc['id'],
+                  name: doc['name'],
+                  imageUrl: doc['imageUrl'],
+                  types: List<String>.from(doc['types']),
+                  height: 0,
+                  weight: 0,
+                  stats: {},
+                ))
+            .toList());
+  }
+
+  Future<bool> isFavorite(int pokemonId) async {
+    final doc = await _userFavoritesCollection.doc(pokemonId.toString()).get();
+    return doc.exists;
+  }
+}

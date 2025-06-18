@@ -1,0 +1,33 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+class PokemonLocalDataSource {
+  final SharedPreferences prefs;
+
+  PokemonLocalDataSource({required this.prefs});
+
+  Future<void> cachePokemonList(List<Pokemon> pokemons) async {
+    final jsonList = pokemons.map((pokemon) => pokemon.toJson()).toList();
+    await prefs.setString('cached_pokemon_list', json.encode(jsonList));
+  }
+
+  List<Pokemon>? getCachedPokemonList() {
+    final jsonString = prefs.getString('cached_pokemon_list');
+    if (jsonString == null) return null;
+    
+    final jsonList = json.decode(jsonString) as List;
+    return jsonList.map((json) => Pokemon.fromJson(json)).toList();
+  }
+
+  Future<void> cacheFavoritePokemons(List<Pokemon> pokemons) async {
+    final jsonList = pokemons.map((pokemon) => pokemon.toJson()).toList();
+    await prefs.setString('cached_favorites', json.encode(jsonList));
+  }
+
+  List<Pokemon>? getCachedFavorites() {
+    final jsonString = prefs.getString('cached_favorites');
+    if (jsonString == null) return null;
+    
+    final jsonList = json.decode(jsonString) as List;
+    return jsonList.map((json) => Pokemon.fromJson(json)).toList();
+  }
+}
