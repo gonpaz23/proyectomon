@@ -4,10 +4,10 @@ class FirebaseInitializer {
   static Future<void> initialize() async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: '',
-        appId: '',
+        apiKey: 'AIzaSyA1EXH75FMEgRx5FbSwVjyI6GxHBy1roLc',
+        appId: 'proyectomon-d0008',
         messagingSenderId: '',
-        projectId: '',
+        projectId: 'proyectomon-d0008',
       ),
     );
   }
